@@ -1,0 +1,1057 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+using Microsoft.SqlServer.Server;
+
+
+namespace smec
+{
+    public partial class Form3 : MetroFramework.Forms.MetroForm
+    {
+        public string getusername;
+        public string oldpassw;
+
+        MySqlConnection conn;
+        public Form main_form { get; set; }
+
+        public string getuser { get; set; }
+
+        public Form3()
+        {
+            InitializeComponent();
+            conn = new MySqlConnection("Server=localhost;Database=smec_db;uid=root;pwd=root");
+            tabControl1.Hide();
+            tabControl2.Hide();
+            ControlBox = false;
+        }
+
+        public static void EnableTab(TabPage page, bool enable)
+        {
+            EnableControls(page.Controls, enable);
+        }
+
+        private static void EnableControls(Control.ControlCollection ctls, bool enable)
+        {
+            foreach (Control ctl in ctls)
+            {
+                ctl.Enabled = enable;
+                EnableControls(ctl.Controls, enable);
+            }
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+            TopMost = true;
+
+            oldpass.Enabled = false;
+            oldpas.Enabled = false;
+
+            //ADD USER VIEW
+            string query = "SELECT * FROM tbl_user;";
+            MySqlCommand comm = new MySqlCommand(query, conn);
+            MySqlDataAdapter adp = new MySqlDataAdapter(comm);
+            conn.Close();
+            DataTable dt = new DataTable();
+            adp.Fill(dt);
+
+            dataGridView1.DataSource = dt;
+            dataGridView1.Columns["userid"].Visible = false;
+            dataGridView1.Columns["password"].Visible = false;
+            dataGridView1.Columns["usertype"].Visible = false;
+            dataGridView1.Columns["user_status"].Visible = false;
+            dataGridView1.Columns["fname"].HeaderText = "Firstname";
+            dataGridView1.Columns["lname"].HeaderText = "Lastname";
+            dataGridView1.Columns["username"].HeaderText = "Username";
+
+            //EDIT USER VIEW
+            string query2 = "SELECT * FROM tbl_user;";
+            MySqlCommand com = new MySqlCommand(query2, conn);
+            MySqlDataAdapter adpp = new MySqlDataAdapter(com);
+            conn.Close();
+            DataTable dt2 = new DataTable();
+            adpp.Fill(dt2);
+
+            dataGridView2.DataSource = dt2;
+            dataGridView2.Columns["userid"].Visible = false;
+            dataGridView2.Columns["password"].Visible = false;
+            dataGridView2.Columns["usertype"].Visible = false;
+            dataGridView2.Columns["fname"].HeaderText = "Firstname";
+            dataGridView2.Columns["lname"].HeaderText = "Lastname";
+            dataGridView2.Columns["username"].HeaderText = "Username";
+
+            string query3 = "SELECT * FROM tbl_user WHERE fname = '" + getuser + "'";
+            MySqlCommand com2 = new MySqlCommand(query3, conn);
+            MySqlDataAdapter adpp3 = new MySqlDataAdapter(com2);
+            conn.Close();
+            DataTable dt3 = new DataTable();
+            adpp3.Fill(dt3);
+
+            dataGridView4.DataSource = dt3;
+            dataGridView4.Columns["userid"].Visible = false;
+            dataGridView4.Columns["password"].Visible = false;
+            dataGridView4.Columns["usertype"].Visible = false;
+            dataGridView4.Columns["fname"].HeaderText = "Firstname";
+            dataGridView4.Columns["lname"].HeaderText = "Lastname";
+            dataGridView4.Columns["username"].HeaderText = "Username";
+
+            //MAIN VIEW
+            string nyez = "SELECT usertype FROM tbl_user WHERE fname = '" + getuser + "'";
+            conn.Open();
+            comm = new MySqlCommand(nyez, conn);
+            adp = new MySqlDataAdapter(comm);
+            conn.Close();
+            dt = new DataTable();
+            adp.Fill(dt);
+
+            if (dt.Rows[0]["usertype"].ToString() == "2" || dt.Rows[0]["usertype"].ToString() == "3" )
+            {
+                tabControl2.Show();
+            }
+            else
+            {
+                tabControl1.Show();
+            }
+
+            conn.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void loadall()
+        {
+            //ADD USER VIEW
+            string query = "SELECT * FROM tbl_user;";
+            MySqlCommand comm = new MySqlCommand(query, conn);
+            MySqlDataAdapter adp = new MySqlDataAdapter(comm);
+            conn.Close();
+            DataTable dt = new DataTable();
+            adp.Fill(dt);
+
+            dataGridView1.DataSource = dt;
+            dataGridView1.Columns["userid"].Visible = false;
+            dataGridView1.Columns["password"].Visible = false;
+            dataGridView1.Columns["usertype"].Visible = false;
+            dataGridView1.Columns["user_status"].Visible = false;
+            dataGridView1.Columns["fname"].HeaderText = "Firstname";
+            dataGridView1.Columns["lname"].HeaderText = "Lastname";
+            dataGridView1.Columns["username"].HeaderText = "Username";
+
+            //EDIT USER ADMIN & MANAGER VIEW
+            string query2 = "SELECT * FROM tbl_user;";
+            MySqlCommand com = new MySqlCommand(query2, conn);
+            MySqlDataAdapter adpp = new MySqlDataAdapter(com);
+            conn.Close();
+            DataTable dt2 = new DataTable();
+            adpp.Fill(dt2);
+
+            dataGridView2.DataSource = dt2;
+            dataGridView2.Columns["userid"].Visible = false;
+            dataGridView2.Columns["password"].Visible = false;
+            dataGridView2.Columns["usertype"].Visible = false;
+            dataGridView2.Columns["user_status"].Visible = true;
+            dataGridView2.Columns["fname"].HeaderText = "Firstname";
+            dataGridView2.Columns["lname"].HeaderText = "Lastname";
+            dataGridView2.Columns["username"].HeaderText = "Username";
+
+            //EDIT USER STAFF VIEW
+            string query3 = "SELECT * FROM tbl_user WHERE fname = '" + getuser + "'";
+            MySqlCommand com3 = new MySqlCommand(query3, conn);
+            MySqlDataAdapter adpp3 = new MySqlDataAdapter(com3);
+            conn.Close();
+            DataTable dt3 = new DataTable();
+            adpp3.Fill(dt3);
+
+            dataGridView4.DataSource = dt3;
+            dataGridView4.Columns["userid"].Visible = false;
+            dataGridView4.Columns["password"].Visible = false;
+            dataGridView4.Columns["usertype"].Visible = false;
+            dataGridView4.Columns["user_status"].Visible = false;
+            dataGridView4.Columns["fname"].HeaderText = "Firstname";
+            dataGridView4.Columns["lname"].HeaderText = "Lastname";
+            dataGridView4.Columns["username"].HeaderText = "Username";
+
+            conn.Close();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex > -1)
+            {
+
+                fname.Text = dataGridView1.Rows[e.RowIndex].Cells["fname"].Value.ToString();
+                lname.Text = dataGridView1.Rows[e.RowIndex].Cells["lname"].Value.ToString();
+                user.Text = dataGridView1.Rows[e.RowIndex].Cells["username"].Value.ToString();
+                int typ = int.Parse(dataGridView1.Rows[e.RowIndex].Cells["usertype"].Value.ToString());
+
+                type.Text = "Administrator";
+                if (typ == 2)
+                {
+                    type.Text = "Manager";
+                }
+                else if (typ == 3)
+                {
+                    type.Text = "Staff";
+                }
+
+                pass.Text = dataGridView1.Rows[e.RowIndex].Cells["password"].Value.ToString();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            textBox5.Text = dataGridView2.Rows[e.RowIndex].Cells["username"].Value.ToString();
+            oldpas.Text = dataGridView2.Rows[e.RowIndex].Cells["password"].Value.ToString();
+            label9.Text = dataGridView2.Rows[e.RowIndex].Cells["userid"].Value.ToString();
+            label11.Text = dataGridView2.Rows[e.RowIndex].Cells["user_status"].Value.ToString();
+
+            if(label11.Text == "active")
+            {
+                checkBox1.Checked = true;
+            }
+            else
+            {
+                checkBox1.Checked = false;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+            oldpass.Text = "";
+            confirm1.Text = "";
+            confirm2.Text = "";
+        }
+
+        private void confirm1_Enter(object sender, EventArgs e)
+        {
+            if (confirm1.Text == "New Password")
+            {
+                confirm1.Text = "";
+            }
+        }
+
+        private void confirm1_Leave(object sender, EventArgs e)
+        {
+            if (confirm1.Text == "")
+            {
+                confirm1.Text = "ConfirmPassowrd";
+                confirm1.ForeColor = Color.Gray;
+            }
+        }
+
+        private void confirm2_Enter(object sender, EventArgs e)
+        {
+            if (confirm2.Text == "New Password")
+                confirm2.Text = "";
+        }
+
+        private void confirm2_Leave(object sender, EventArgs e)
+        {
+            if (confirm2.Text == "")
+            {
+                confirm2.Text = "Confirm Password";
+                confirm2.ForeColor = Color.Gray;
+            }
+        }
+
+        private void Form3_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            main_form.Show();
+        }
+
+        private void confirm1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void oldpass_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox5_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+
+
+            if (textBox5.Text == "")
+            {
+                MessageBox.Show("Please input your desired username.");
+            }
+            else
+            {
+                String query5 = "SELECT username FROM tbl_user" + " WHERE username ='" + textBox5.Text + "'";
+                conn.Open();
+                MySqlCommand com = new MySqlCommand(query5, conn);
+                MySqlDataAdapter adp = new MySqlDataAdapter(com);
+                DataTable dt = new DataTable();
+                adp.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("Username Already Taken!");
+                }
+                else
+                {
+                    string query = ("UPDATE tbl_user SET username = '" + textBox5.Text + "',  WHERE userid = '" + label9.Text + "';");
+                    MySqlCommand comm = new MySqlCommand(query, conn);
+                    comm.ExecuteNonQuery();
+                    MessageBox.Show("Username has been updated.");
+                    conn.Close();
+                    loadall();
+                }
+            }
+        }
+
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            if (oldpass.Text != "")
+            {
+
+                if (confirm1.Text != "" || confirm2.Text != "")
+                {
+                    if (confirm1.Text == confirm2.Text)
+                    {
+                        string query = ("UPDATE tbl_user SET password = '" + confirm1.Text + "' WHERE userid = '" + label9.Text + "';");
+                        conn.Open();
+                        MySqlCommand comm = new MySqlCommand(query, conn);
+                        comm.ExecuteNonQuery();
+                        MessageBox.Show("Password Updated");
+                        conn.Close();
+                        loadall();
+                    }
+                    else if (confirm1.Text != confirm2.Text)
+                    {
+                        MessageBox.Show("Passwords do not match");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please input Password Credentials");
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Please input Password Credentials");
+            }
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            textBox5.Text = "";
+        }
+
+        private void pictureBox6_Click(object sender, EventArgs e)
+        {
+            if (fname.Text == "" || lname.Text == "" || type.Text == "" || user.Text == "" || pass.Text == "")
+            {
+                MessageBox.Show("Please fill out the required fields");
+            }
+            else
+            {
+                String query5 = "SELECT username FROM tbl_user" + " WHERE username ='" + user.Text + "'";
+                MySqlCommand com = new MySqlCommand(query5, conn);
+                MySqlDataAdapter adp = new MySqlDataAdapter(com);
+                DataTable dt = new DataTable();
+                adp.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("Username Already Taken!");
+                }
+                else
+                {
+                    int utype = 0;
+                    if (type.Text == "Administrator")
+                    {
+                        utype = 1;
+                        type.Text = "Administrator";
+                    }
+                    else if (type.Text == "Manager")
+                    {
+                        utype = 2;
+                        type.Text = "Manager";
+                    }
+                    else if (type.Text == "Staff")
+                    {
+                        utype = 3;
+                        type.Text = "Staff";
+                    }
+                    string query = ("INSERT INTO tbl_user(fname, lname, usertype, username, password) " +
+                                   "VALUES('" + fname.Text + "', ' " + lname.Text + "', ' " + utype +
+                                   "', ' " + user.Text + "', ' " + pass.Text + "' );");
+                    conn.Open();
+                    MySqlCommand comm = new MySqlCommand(query, conn);
+                    comm.ExecuteNonQuery();
+                    MessageBox.Show("User added");
+                    conn.Close();
+                    loadall();
+                }
+            }
+        }
+
+        private void pictureBox7_Click(object sender, EventArgs e)
+        {
+            fname.Text = "";
+            lname.Text = "";
+            type.Text = "";
+            user.Text = "";
+            pass.Text = "";
+        }
+
+        private void pictureBox8_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            oldpass.Text = "Password";
+            confirm1.Text = "New Password";
+            confirm2.Text = "Confirm Password";
+        }
+
+        private void dataGridView4_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            label10.Text = dataGridView4.Rows[e.RowIndex].Cells["userid"].Value.ToString();
+            oldus.Text = dataGridView4.Rows[e.RowIndex].Cells["username"].Value.ToString();
+            int typ = int.Parse(dataGridView4.Rows[e.RowIndex].Cells["usertype"].Value.ToString());
+            oldpas.Text = dataGridView4.Rows[e.RowIndex].Cells["password"].Value.ToString();
+        }
+
+        private void pictureBox11_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex > -1)
+            {
+
+                fname.Text = dataGridView1.Rows[e.RowIndex].Cells["fname"].Value.ToString();
+                lname.Text = dataGridView1.Rows[e.RowIndex].Cells["lname"].Value.ToString();
+                user.Text = dataGridView1.Rows[e.RowIndex].Cells["username"].Value.ToString();
+                int typ = int.Parse(dataGridView1.Rows[e.RowIndex].Cells["usertype"].Value.ToString());
+
+                type.Text = "Administrator";
+                if (typ == 2)
+                {
+                    type.Text = "Manager";
+                }
+                else if (typ == 3)
+                {
+                    type.Text = "Staff";
+                }
+                pass.Text = dataGridView1.Rows[e.RowIndex].Cells["password"].Value.ToString();
+            }
+        }
+
+        private void pictureBox12_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox13_Click_1(object sender, EventArgs e)
+        {
+            if (confirma.Text != "" || confirmb.Text != "")
+            {
+                if (confirm1.Text == confirm2.Text)
+                {
+                    string query = ("UPDATE tbl_user SET password = '" + confirma.Text + "' WHERE userid = '" + label10.Text + "';");
+                    conn.Open();
+                    MySqlCommand comm = new MySqlCommand(query, conn);
+                    comm.ExecuteNonQuery();
+                    MessageBox.Show("Password Updated");
+                    conn.Close();
+                    loadall();
+                }
+                else if (confirma.Text != confirmb.Text)
+                {
+                    MessageBox.Show("Passwords do not match");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please input Password Credentials");
+            }
+
+        }
+
+        private void pictureBox15_Click(object sender, EventArgs e)
+        {
+            if (oldus.Text == "")
+            {
+                MessageBox.Show("Please input your desired username.");
+            }
+            else
+            {
+                String query5 = "SELECT username FROM tbl_user" + " WHERE username ='" + oldus.Text + "'";
+                conn.Open();
+                MySqlCommand com = new MySqlCommand(query5, conn);
+                MySqlDataAdapter adp = new MySqlDataAdapter(com);
+                DataTable dt = new DataTable();
+                adp.Fill(dt);
+                conn.Close();
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("Username Already Taken!");
+                }
+                else
+                {
+                    string query = ("UPDATE tbl_user SET username = '" + oldus.Text + "' WHERE userid = '" + label10.Text + "';");
+                    conn.Open();
+                    MySqlCommand comm = new MySqlCommand(query, conn);
+                    comm.ExecuteNonQuery();
+                    MessageBox.Show("Username has been updated.");
+                    conn.Close();
+                    loadall();
+
+
+                }
+            }
+        }
+
+        private void pictureBox16_Click(object sender, EventArgs e)
+        {
+            oldus.Text = "";
+        }
+
+        private void pictureBox14_Click(object sender, EventArgs e)
+        {
+            oldpas.Text = "Password";
+            confirma.Text = "New Password";
+            confirmb.Text = "Confirm Password";
+        }
+
+        private void pictureBox12_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void oldus_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirma_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirma_Enter(object sender, EventArgs e)
+        {
+            if (confirma.Text == "New Password")
+            {
+                confirma.Text = "";
+            }
+        }
+
+        private void confirma_Leave(object sender, EventArgs e)
+        {
+            if (confirma.Text == "")
+            {
+                confirma.Text = "New Password";
+                confirma.ForeColor = Color.Gray;
+            }
+
+        }
+
+        private void confirmb_Enter(Object sender, EventArgs e)
+        {
+            if (confirmb.Text == "Confirm Password")
+                confirmb.Text = "";
+        }
+
+        private void confirmb_Leave(Object sender, EventArgs e)
+        {
+            if (confirmb.Text == "")
+            {
+                confirmb.Text = "Confirm Password";
+            }
+        }
+
+        private void confirm1_Enter_1(object sender, EventArgs e)
+        {
+            if (confirm1.Text == "New Password")
+                confirm1.Text = "";
+        }
+
+        private void confirm1_Leave_1(object sender, EventArgs e)
+        {
+            if (confirm1.Text == "")
+            {
+                confirm1.Text = "New Password";
+                confirm1.ForeColor = Color.Gray;
+            }
+        }
+
+        private void confirm2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox5_Click_1(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirm1_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox8_Click_1(object sender, EventArgs e)
+        {
+            if (oldpas.Text != "")
+            {
+
+                if (confirma.Text != "" || confirmb.Text != "")
+                {
+                    if (confirma.Text == confirmb.Text)
+                    {
+                        string query = ("UPDATE tbl_user SET password = '" + confirma.Text + "' WHERE userid = '" + label10.Text + "';");
+                        conn.Open();
+                        MySqlCommand comm = new MySqlCommand(query, conn);
+                        comm.ExecuteNonQuery();
+                        MessageBox.Show("Password Updated");
+                        conn.Close();
+                        loadall();
+                    }
+                    else if (confirm1.Text != confirm2.Text)
+                    {
+                        MessageBox.Show("Passwords do not match");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please input Password Credentials");
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("Please input Password Credentials");
+            }
+
+        }
+
+        private void oldpass_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirm1_Leave_2(object sender, EventArgs e)
+        {
+            if (confirm1.Text == "")
+            {
+                confirm1.Text = "New Password";
+            }
+        }
+
+        private void Form3_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
+        }
+
+        private void oldpass_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fname_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox5_Click_2(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Form3_FormClosing_1(object sender, FormClosingEventArgs e)
+        {
+            main_form.Show();
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabControl2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage4_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox8_Click_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox14_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox15_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox16_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label14_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView4_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            oldus.Text = dataGridView4.Rows[e.RowIndex].Cells["username"].Value.ToString();
+            oldpas.Text = dataGridView4.Rows[e.RowIndex].Cells["password"].Value.ToString();
+            label17.Text = dataGridView4.Rows[e.RowIndex].Cells["user_status"].Value.ToString();
+
+            if (label17.Text == "active")
+            {
+                checkBox2.Checked = true;
+            }
+            else
+            {
+                checkBox2.Checked = false;
+            }
+        }
+
+        private void oldus_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void oldpas_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirma_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirmb_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void type_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lname_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pass_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void user_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fname_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void oldpass_TextChanged_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void confirm1_TextChanged_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (label11.Text == "active")
+            {
+                label12.Text = "inactive";
+            }
+            else if (label11.Text == "inactive")
+            {
+                label12.Text = "active";
+            }
+
+            loadall();
+            
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            conn.Open();
+            if (checkBox2.Checked == false)
+            {
+                string query4 = ("UPDATE tbl_user SET user_status = 'inactive'  WHERE userid = '" + label17.Text + "';");
+                MySqlCommand comm4 = new MySqlCommand(query4, conn);
+                comm4.ExecuteNonQuery();
+                MessageBox.Show("Status is Inactive.");
+                conn.Close();
+                loadall();
+            }
+            else
+            {
+                string query4 = ("UPDATE tbl_user SET user_status = 'active'  WHERE userid = '" + label17.Text + "';");
+                MySqlCommand comm4 = new MySqlCommand(query4, conn);
+                comm4.ExecuteNonQuery();
+                MessageBox.Show("Status is Active.");
+                conn.Close();
+                loadall();
+            }
+            
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView4_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            oldus.Text = dataGridView4.Rows[e.RowIndex].Cells["username"].Value.ToString();
+            oldpas.Text = dataGridView4.Rows[e.RowIndex].Cells["password"].Value.ToString();
+            label17.Text = dataGridView4.Rows[e.RowIndex].Cells["user_status"].Value.ToString();
+
+            if (label17.Text == "active")
+            {
+                checkBox2.Checked = true;
+            }
+            else
+            {
+                checkBox2.Checked = false;
+            }
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox9_Click(object sender, EventArgs e)
+        {
+            if (label12.Text == "active")
+            {
+                string query4 = ("UPDATE tbl_user SET user_status = 'inactive' WHERE userid = '" + label9.Text + "';");
+                MySqlCommand comm4 = new MySqlCommand(query4, conn);
+                comm4.ExecuteNonQuery();
+                MessageBox.Show("Status is Inactive.");
+                conn.Close();
+            }
+            else if (label11.Text == "inactive")
+            {
+                string query4 = ("UPDATE tbl_user SET user_status = 'active' WHERE userid = '" + label9.Text + "';");
+                MySqlCommand comm4 = new MySqlCommand(query4, conn);
+                comm4.ExecuteNonQuery();
+                MessageBox.Show("Status is Active.");
+                conn.Close();
+            }
+
+            loadall();
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+
